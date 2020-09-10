@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PrinciChristiPracticalTask</string>
+    <string name="strUsername">Username</string>
+    <string name="strPassword">Password</string>
+    <string name="strLogin">Login</string>
+
+</resources>
