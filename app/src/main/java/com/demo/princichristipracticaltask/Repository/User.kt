@@ -1,8 +1,9 @@
+package com.demo.princichristipracticaltask.Repository
+
 import com.google.gson.annotations.SerializedName
 
+public class User(
 
-data class User(
-
-    @SerializedName("userId") val userId: Int,
-    @SerializedName("userName") val userName: String
+    @SerializedName("userId") public val userId: Int,
+    @SerializedName("userName") public val userName: String
 )

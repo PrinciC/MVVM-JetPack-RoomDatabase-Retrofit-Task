@@ -44,8 +44,8 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.1.0'
 
     // Room components
-    implementation 'android.arch.persistence.room:runtime:1.1.1'
-    kapt 'android.arch.persistence.room:compiler:1.1.1'
+    implementation 'androidx.room:room-runtime:2.2.5'
+    annotationProcessor 'androidx.room:room-compiler:2.2.5'
 
     // Lifecycle components
     implementation 'android.arch.lifecycle:extensions:1.1.1'

@@ -1,13 +1,9 @@
 package com.demo.princichristipracticaltask.Repository
 
-import User
-import UserInfoDao
 import android.app.Application
 
 import android.os.AsyncTask
 import androidx.lifecycle.LiveData
-import com.mvvm.kot.Kotlin_Retrofit_Room.Repository.ResultModel
-import com.mvvm.kot.Kotlin_Retrofit_Room.Repository.UserInfoRoomDataBase
 
 class UserDBRepository {
     private   var userDao: UserInfoDao

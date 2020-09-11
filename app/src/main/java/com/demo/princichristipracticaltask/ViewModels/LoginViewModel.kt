@@ -1,9 +1,9 @@
 package com.demo.princichristipracticaltask.ViewModels
 
-import User
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import com.demo.princichristipracticaltask.Repository.User
 import com.demo.princichristipracticaltask.Repository.UserDBRepository
 import com.demo.princichristipracticaltask.Repository.ValidationRepository
 
@@ -26,7 +26,7 @@ private var validationRepository: ValidationRepository
         return mAllUsers
     }
 
-    fun insert(user: String) {
+    fun insert(user: User) {
         userRepository.insert(user)
     }
 }

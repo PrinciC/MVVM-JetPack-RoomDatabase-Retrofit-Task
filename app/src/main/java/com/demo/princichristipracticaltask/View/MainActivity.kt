@@ -1,8 +1,12 @@
-package com.demo.princichristipracticaltask.Activity
+package com.demo.princichristipracticaltask.View
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.Menu
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -10,16 +14,13 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.demo.princichristipracticaltask.R
-import com.demo.princichristipracticaltask.Repository.APIURL
-import com.demo.princichristipracticaltask.Repository.APIServices
+import com.demo.princichristipracticaltask.Repository.APIURL.Companion.apiService
+import com.demo.princichristipracticaltask.Repository.User
 import com.demo.princichristipracticaltask.ViewModels.LoginViewModel
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -33,8 +34,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
-
-        loginViewModel = ViewModelProviders.of(this!!).get(LoginViewModel::class.java)
 
         loginUsername = findViewById<EditText>(R.id.edtUsername)
         loginPassword = findViewById<EditText>(R.id.edtPassword)
@@ -81,46 +80,44 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             return
         }
 
-        Toast.makeText(this,"Login Successfully",Toast.LENGTH_LONG).show()
-        // api call
-        loginViewModel.validateCredentials(username,password).observe(this,object:
-            Observer<String> {
-            override fun onChanged(t: String?) {
-                callLoginRequest(username, password)
-            }
-        })
-
+        // Login api call
+        try {
+            loginViewModel = ViewModelProviders.of(this!!).get(LoginViewModel::class.java)
+            loginViewModel.validateCredentials(username, password).observe(this, object :
+                Observer<String> {
+                override fun onChanged(t: String?) {
+                    callLoginRequest(username, password)
+                }
+            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun callLoginRequest(username: String, password: String) {
 
-        fun providesOkHttpClientBuilder(): OkHttpClient {
-
-            val httpClient = OkHttpClient.Builder()
-            return httpClient.readTimeout(1200, TimeUnit.SECONDS)
-                .connectTimeout(1200, TimeUnit.SECONDS).build()
-        }
-
         try {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(APIURL.BASE_URL)
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(providesOkHttpClientBuilder())
-                .build()
-
+            val apiService = apiService
             //Defining retrofit api service
-            val service = retrofit.create(APIServices::class.java)
-            service.loginRequest(username, password).enqueue(object : Callback<String> {
+            apiService.loginRequest(username, password).enqueue(object : Callback<User> {
                 override fun onResponse(
-                    call: Call<String>,
-                    response: Response<String>
+                    call: Call<User>,
+                    response: Response<User>
                 ) {
                     Log.d("Repository", "Response::::" + response.body()!!)
-                    loginViewModel.insert(response.body())
+                    loginViewModel.insert(response.body()!!)
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val intent = Intent(this@MainActivity,UserDetailActivity::class.java);
+                        var userName = username
+                        var password = password
+                        intent.putExtra("Username", userName)
+                        intent.putExtra("Password", password)
+                        startActivity(intent);
+                    }, 2000)
                 }
 
-                override fun onFailure(call: Call<String>, t: Throwable) {
+                override fun onFailure(call: Call<User>, t: Throwable) {
                     Log.d("Repository", "Failed:::")
                 }
             })

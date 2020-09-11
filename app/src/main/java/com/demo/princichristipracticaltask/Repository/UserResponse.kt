@@ -1,3 +1,4 @@
+import com.demo.princichristipracticaltask.Repository.User
 import com.google.gson.annotations.SerializedName
 
  class UserResponse(

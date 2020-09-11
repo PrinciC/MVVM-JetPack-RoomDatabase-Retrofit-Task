@@ -3,5 +3,6 @@
     <string name="strUsername">Username</string>
     <string name="strPassword">Password</string>
     <string name="strLogin">Login</string>
+    <string name="str_successful_login">Login Successfully</string>
 
 </resources>
