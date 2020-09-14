@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.demo.princichristipracticaltask.R
 import com.demo.princichristipracticaltask.Repository.APIURL
+import com.demo.princichristipracticaltask.Utils.AppUtils
 import com.demo.princichristipracticaltask.Utils.AppUtils.Companion.showToast
 import com.demo.princichristipracticaltask.Utils.GlobalData
 import com.demo.princichristipracticaltask.ViewModels.LoginViewModel
@@ -147,6 +148,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         if (responseBody != null) {
                             try {
 
+                                showToast(this@MainActivity,GlobalData.Unknown)
+
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
@@ -172,6 +175,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                             // insert api response user data in database
                             loginViewModel.insert(responce.user)
+
+                        } else {
+
+                            showToast(this@MainActivity,GlobalData.Unknown)
 
                         }
 

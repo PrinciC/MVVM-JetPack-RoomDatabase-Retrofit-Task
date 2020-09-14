@@ -20,4 +20,5 @@ object GlobalData {
     var PASSWORD = "password"
 
     var APISUCCESS = "Sukses."
+    var Unknown = "Oops, something went wrong. Please try again later"
 }
