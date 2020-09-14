@@ -4,6 +4,7 @@ object GlobalData {
 
     const val USERNAME_LENGTH=30
     const val PASSWORD_LENGTH=16
+    const val PASSWORD_LENGTH_LESS=8
 
     var USERNAME_MESSAGE ="Enter Username"
     var PASSWORD_MESSAGE ="Enter Password"
@@ -17,4 +18,6 @@ object GlobalData {
 
     var USERNAME = "username"
     var PASSWORD = "password"
+
+    var APISUCCESS = "Sukses."
 }

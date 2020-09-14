@@ -27,6 +27,6 @@ class UserDetailActivity : AppCompatActivity() {
         //get username fro database
         var dbUserName = userDatabase?.getBody()
 
-        tvLoginData.setText(getString(R.string.str_successful_login) +" "+dbUserName)
+        tvLoginData.setText(getString(R.string.str_successful_login) +" "+strUser)
     }
 }

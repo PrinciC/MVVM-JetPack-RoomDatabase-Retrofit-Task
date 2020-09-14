@@ -17,11 +17,16 @@ abstract  class UserInfoRoomDataBase: RoomDatabase(){
 
         fun getInstance(context: Context): UserInfoRoomDataBase? {
             if (INSTANCE == null) {
-                synchronized(UserInfoRoomDataBase::class) {
-                    INSTANCE = Room.databaseBuilder(context,
+                synchronized(this) {
+
+                    INSTANCE = Room
+                        .databaseBuilder(context,
                             UserInfoRoomDataBase::class.java, "user_info_database.db")
-                            .addCallback(sRoomDataBaseCallback)
-                            .build()
+                        .fallbackToDestructiveMigration()
+                        .build()
+                           /* .addCallback(sRoomDataBaseCallback)
+                            .build()*/
+
                 }
             }
             return INSTANCE

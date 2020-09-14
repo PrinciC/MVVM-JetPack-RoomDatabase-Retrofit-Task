@@ -1,6 +1,5 @@
 package com.demo.princichristipracticaltask.Utils
 
-import android.app.AlertDialog
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
@@ -9,6 +8,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.demo.princichristipracticaltask.BuildConfig
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
+
 
 class AppUtils {
     companion object {
@@ -50,6 +53,22 @@ class AppUtils {
                 }
                 e.printStackTrace()
             }
+        }
+
+         fun getJsonObjFromStr(test: Any): Any? {
+            var o: Any? = null
+            try {
+                o = JSONObject(test.toString())
+            } catch (ex: JSONException) {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        o = JSONArray(test)
+                    }
+                } catch (ex1: JSONException) {
+                    return null
+                }
+            }
+            return o
         }
 
 

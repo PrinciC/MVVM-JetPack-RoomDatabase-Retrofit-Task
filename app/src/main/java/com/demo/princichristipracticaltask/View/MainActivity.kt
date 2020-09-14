@@ -1,36 +1,30 @@
 package com.demo.princichristipracticaltask.View
 
+import UserResponse
 import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.Menu
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
-import androidx.lifecycle.Observer
+import android.widget.ProgressBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.demo.princichristipracticaltask.R
-import com.demo.princichristipracticaltask.Repository.APIURL.Companion.apiService
-import com.demo.princichristipracticaltask.Repository.User
+import com.demo.princichristipracticaltask.Repository.APIURL
 import com.demo.princichristipracticaltask.Utils.AppUtils.Companion.showToast
 import com.demo.princichristipracticaltask.Utils.GlobalData
 import com.demo.princichristipracticaltask.ViewModels.LoginViewModel
-import okhttp3.OkHttpClient
-import okhttp3.internal.platform.Platform.get
-import org.json.JSONObject
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -41,6 +35,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var loginUsername: EditText
     lateinit var loginPassword: EditText
     lateinit var loginBtn: Button
+    lateinit var progessdialog: ProgressBar
+
+    val apiService = APIURL.apiService
+
+    val username: String = loginUsername.text.toString()
+    val password: String = loginPassword.text.toString()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             loginUsername = findViewById<EditText>(R.id.edtUsername)
             loginPassword = findViewById<EditText>(R.id.edtPassword)
             loginBtn = findViewById<Button>(R.id.btnLogin)
+            progessdialog = findViewById<ProgressBar>(R.id.progessdialog)
             loginBtn.setOnClickListener(this)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -73,9 +74,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun checkValidate() {
-
-        val username: String = loginUsername.text.toString()
-        val password: String = loginPassword.text.toString()
 
         if (username.isEmpty()) {
             loginUsername.error = GlobalData.USERNAME_MESSAGE
@@ -97,7 +95,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             return
         }
 
-        if (password.length < 8) {
+        if (password.length < GlobalData.PASSWORD_LENGTH_LESS) {
             loginPassword.error = GlobalData.LOGIN_PASSWORD_INVALID
             return
         }
@@ -107,14 +105,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             //check internet connection
             if (isNetworkConnected(this@MainActivity)) {
+
                 //call Viewmodel
                 context = this@MainActivity
                 loginViewModel =
                     ViewModelProvider(this, MyViewModelFactory(this.application, context)).get(
                         LoginViewModel::class.java
                     )
-                loginViewModel.validateCredentials(username, password).observe(this,
-                    Observer<String> { callLoginRequest(username, password) })
+
+                callLoginRequest(username, password)
+
             } else {
                 showToast(this, getString(R.string.internet_check))
             }
@@ -127,37 +127,67 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private fun callLoginRequest(username: String, password: String) {
 
         try {
-            val apiService = apiService
+            //progressdialog
+            progessdialog.visibility = View.VISIBLE
+
+
             //Defining retrofit api service
-            apiService.loginRequest(username, password).enqueue(object : Callback<User> {
+            apiService.loginRequest(username, password).enqueue(object : Callback<UserResponse> {
                 // API Success
                 override fun onResponse(
-                    call: Call<User>,
-                    response: Response<User>
+                    call: Call<UserResponse>,
+                    response: Response<UserResponse>
                 ) {
                     Log.d("Repository", "Response::::" + response.body()!!)
 
-                    // insert api response user data in database
-                    loginViewModel.insert(response.body()!!)
+                    val responce: UserResponse? = response.body()
 
-                    //Go to UserDetail Activity
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        val intent = Intent(this@MainActivity, UserDetailActivity::class.java)
-                        var userName = username
-                        var password = password
-                        intent.putExtra(GlobalData.USERNAME, userName)
-                        intent.putExtra(GlobalData.PASSWORD, password)
-                        startActivity(intent);
-                    }, 2000)
+                    if (responce == null) {
+                        val responseBody = response.errorBody()
+                        if (responseBody != null) {
+                            try {
+
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    } else {
+
+                        progessdialog.visibility = View.GONE
+
+                        //200 sucess
+                        Log.d("TAG", "===Response==" + response.body().toString())
+                        Log.d("OP_: ", Gson().toJson(response.body()))
+
+                        if (responce.errorMessage.equals(GlobalData.APISUCCESS)) {
+
+                            //Go to UserDetail Activity
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                val intent =
+                                    Intent(this@MainActivity, UserDetailActivity::class.java)
+                                intent.putExtra(GlobalData.USERNAME, username)
+                                intent.putExtra(GlobalData.PASSWORD, password)
+                                startActivity(intent);
+                            }, 2000)
+
+                            // insert api response user data in database
+                            loginViewModel.insert(responce.user)
+
+                        }
+
+                    }
+
                 }
 
                 // API Failure
-                override fun onFailure(call: Call<User>, t: Throwable) {
+                override fun onFailure(call: Call<UserResponse>, t: Throwable) {
                     Log.d("Repository", "Failed:::")
+                    progessdialog.visibility = View.GONE
                 }
             })
         } catch (e: Exception) {
             e.printStackTrace()
+            progessdialog.visibility = View.GONE
         }
 
     }

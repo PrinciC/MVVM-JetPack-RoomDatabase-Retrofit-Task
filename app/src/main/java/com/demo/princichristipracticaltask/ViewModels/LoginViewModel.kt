@@ -33,6 +33,7 @@ class LoginViewModel(private val context: Context, application: Application) :
 
     // insert user data
     fun insert(user: User) {
+        userRepository = UserDBRepository(application = getApplication())
         userRepository.insert(user)
     }
 }
