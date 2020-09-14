@@ -53,12 +53,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun initData() {
-        try{
+        try {
             loginUsername = findViewById<EditText>(R.id.edtUsername)
             loginPassword = findViewById<EditText>(R.id.edtPassword)
             loginBtn = findViewById<Button>(R.id.btnLogin)
             loginBtn.setOnClickListener(this)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
 
@@ -106,19 +106,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         try {
 
             //check internet connection
-            if(isNetworkConnected(this@MainActivity))
-            {
+            if (isNetworkConnected(this@MainActivity)) {
                 //call Viewmodel
                 context = this@MainActivity
-                loginViewModel = ViewModelProvider(this, MyViewModelFactory(this.application, context)).get(
-                    LoginViewModel::class.java
-                )
+                loginViewModel =
+                    ViewModelProvider(this, MyViewModelFactory(this.application, context)).get(
+                        LoginViewModel::class.java
+                    )
                 loginViewModel.validateCredentials(username, password).observe(this,
                     Observer<String> { callLoginRequest(username, password) })
-            }
-            else
-            {
-                showToast(this,getString(R.string.internet_check))
+            } else {
+                showToast(this, getString(R.string.internet_check))
             }
 
         } catch (e: Exception) {
@@ -144,7 +142,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                     //Go to UserDetail Activity
                     Handler(Looper.getMainLooper()).postDelayed({
-                        val intent = Intent(this@MainActivity, UserDetailActivity::class.java);
+                        val intent = Intent(this@MainActivity, UserDetailActivity::class.java)
                         var userName = username
                         var password = password
                         intent.putExtra(GlobalData.USERNAME, userName)
