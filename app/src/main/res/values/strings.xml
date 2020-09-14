@@ -4,5 +4,5 @@
     <string name="strPassword">Password</string>
     <string name="strLogin">Login</string>
     <string name="str_successful_login">Login Successfully</string>
-
+    <string name="internet_check">No internet found. Showing cached list in the view</string>
 </resources>

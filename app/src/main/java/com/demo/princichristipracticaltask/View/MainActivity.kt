@@ -3,6 +3,7 @@ package com.demo.princichristipracticaltask.View
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -20,6 +21,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.demo.princichristipracticaltask.R
 import com.demo.princichristipracticaltask.Repository.APIURL.Companion.apiService
 import com.demo.princichristipracticaltask.Repository.User
+import com.demo.princichristipracticaltask.Utils.AppUtils.Companion.showToast
 import com.demo.princichristipracticaltask.Utils.GlobalData
 import com.demo.princichristipracticaltask.ViewModels.LoginViewModel
 import okhttp3.OkHttpClient
@@ -51,10 +53,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun initData() {
-        loginUsername = findViewById<EditText>(R.id.edtUsername)
-        loginPassword = findViewById<EditText>(R.id.edtPassword)
-        loginBtn = findViewById<Button>(R.id.btnLogin)
-        loginBtn.setOnClickListener(this)
+        try{
+            loginUsername = findViewById<EditText>(R.id.edtUsername)
+            loginPassword = findViewById<EditText>(R.id.edtPassword)
+            loginBtn = findViewById<Button>(R.id.btnLogin)
+            loginBtn.setOnClickListener(this)
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+
     }
 
     override fun onClick(v: View?) {
@@ -97,12 +104,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         // Login api call
         try {
-            context = this@MainActivity
-            loginViewModel = ViewModelProvider(this, MyViewModelFactory(this.application, context)).get(
-                LoginViewModel::class.java
-            )
-            loginViewModel.validateCredentials(username, password).observe(this,
-                Observer<String> { callLoginRequest(username, password) })
+
+            //check internet connection
+            if(isNetworkConnected(this@MainActivity))
+            {
+                //call Viewmodel
+                context = this@MainActivity
+                loginViewModel = ViewModelProvider(this, MyViewModelFactory(this.application, context)).get(
+                    LoginViewModel::class.java
+                )
+                loginViewModel.validateCredentials(username, password).observe(this,
+                    Observer<String> { callLoginRequest(username, password) })
+            }
+            else
+            {
+                showToast(this,getString(R.string.internet_check))
+            }
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -152,6 +169,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return LoginViewModel(context, mApplication) as T
         }
+    }
+
+    fun isNetworkConnected(context: Context): Boolean {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = cm.activeNetworkInfo
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting
     }
 }
 
