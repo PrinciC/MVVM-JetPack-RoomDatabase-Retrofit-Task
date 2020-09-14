@@ -7,6 +7,7 @@ import java.util.regex.Pattern
 
 class ValidationRepository(application: Application) {
 
+    //check validation for user repository
     var application:Application
 
     init {

@@ -16,14 +16,18 @@ import androidx.lifecycle.ViewModelProviders
 import com.demo.princichristipracticaltask.R
 import com.demo.princichristipracticaltask.Repository.APIURL.Companion.apiService
 import com.demo.princichristipracticaltask.Repository.User
+import com.demo.princichristipracticaltask.Utils.GlobalData
 import com.demo.princichristipracticaltask.ViewModels.LoginViewModel
 import okhttp3.OkHttpClient
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
+
+    // LoginViewModel for observing login data
     lateinit var loginViewModel: LoginViewModel
 
     lateinit var loginUsername: EditText
@@ -35,6 +39,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         setContentView(R.layout.activity_main)
 
+        // initialize data
+        initData()
+
+    }
+
+    private fun initData() {
         loginUsername = findViewById<EditText>(R.id.edtUsername)
         loginPassword = findViewById<EditText>(R.id.edtPassword)
         loginBtn = findViewById<Button>(R.id.btnLogin)
@@ -42,8 +52,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-
+        // Login button click event
         if (v == loginBtn) {
+            // Check validation for username & password
             checkValidate()
         }
 
@@ -54,29 +65,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val username: String = loginUsername.text.toString()
         val password: String = loginPassword.text.toString()
 
-
         if (username.isEmpty()) {
-            loginUsername.error = "Enter Username"
+            loginUsername.error = GlobalData.USERNAME_MESSAGE
             return
         }
 
-        if (username.length > 30) {
-            loginUsername.error = "Username should be less then 30 character"
+        if (username.length > GlobalData.USERNAME_LENGTH) {
+            loginUsername.error = GlobalData.LOGIN_USERNAME_VALIDATION_MESSAGE
             return
         }
 
         if (password.isEmpty()) {
-            loginPassword.error = "Enter Password"
+            loginPassword.error = GlobalData.PASSWORD_MESSAGE
             return
         }
 
-        if (password.length > 16) {
-            loginPassword.error = "Enter should be less then 16 character"
+        if (password.length > GlobalData.PASSWORD_LENGTH) {
+            loginPassword.error = GlobalData.LOGIN_PASSWORD_VALIDATION_MESSAGE
             return
         }
 
         if (password.length < 8) {
-            loginPassword.error = "Invalid Password"
+            loginPassword.error = GlobalData.LOGIN_PASSWORD_INVALID
             return
         }
 
@@ -100,23 +110,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             val apiService = apiService
             //Defining retrofit api service
             apiService.loginRequest(username, password).enqueue(object : Callback<User> {
+                // API Success
                 override fun onResponse(
                     call: Call<User>,
                     response: Response<User>
                 ) {
                     Log.d("Repository", "Response::::" + response.body()!!)
+
+                    // insert api response user data in database
                     loginViewModel.insert(response.body()!!)
 
+                    //Go to UserDetail Activity
                     Handler(Looper.getMainLooper()).postDelayed({
-                        val intent = Intent(this@MainActivity,UserDetailActivity::class.java);
+                        val intent = Intent(this@MainActivity, UserDetailActivity::class.java);
                         var userName = username
                         var password = password
-                        intent.putExtra("Username", userName)
-                        intent.putExtra("Password", password)
+                        intent.putExtra(GlobalData.USERNAME, userName)
+                        intent.putExtra(GlobalData.PASSWORD, password)
                         startActivity(intent);
                     }, 2000)
                 }
 
+                // API Failure
                 override fun onFailure(call: Call<User>, t: Throwable) {
                     Log.d("Repository", "Failed:::")
                 }

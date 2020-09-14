@@ -9,15 +9,18 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "user_info")
 class ResultModel {
+    //database table create
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "id")
     @SerializedName("id")
     private var id: Int = 0
+
     @NonNull
     @ColumnInfo(name = "user_name")
     @SerializedName("body")
     private var body: String? = null
+
     @NonNull
     @ColumnInfo(name = "user_password")
     @SerializedName("title")
@@ -47,7 +50,6 @@ class ResultModel {
     fun setTitle(title: String) {
         this.title = title
     }
-
 
 
     override fun toString(): String {
