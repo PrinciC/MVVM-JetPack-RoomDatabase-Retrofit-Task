@@ -4,36 +4,23 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import com.demo.princichristipracticaltask.Repository.ResultModel
 import com.demo.princichristipracticaltask.Repository.User
 import com.demo.princichristipracticaltask.Repository.UserDBRepository
-import com.demo.princichristipracticaltask.Repository.ValidationRepository
 
 class LoginViewModel(private val context: Context, application: Application) :
     AndroidViewModel(application) {
     // LoginViewModel
-    private lateinit var userRepository: UserDBRepository
-    private lateinit var mAllUsers: LiveData<List<User>>
-    private lateinit var validationRepository: ValidationRepository
+    var liveDataLogin: LiveData<ResultModel>? = null
 
-    /* public constructor(application: Application) : super(application) {
-         validationRepository = ValidationRepository(application)
-         userRepository = UserDBRepository(application)
-         mAllUsers = userRepository.getAllUsers()
-     }*/
-
-    // validation for user data
-    fun validateCredentials(email: String, passWord: String): LiveData<String> {
-        return validationRepository.validateCredentials(email, passWord)
+    // insert data
+    fun insertData(context: Context, userId: String, userName: String) {
+        UserDBRepository.insertData(context, userId, userName)
     }
 
-    // get all user
-    fun getAllUsers(): LiveData<List<User>> {
-        return mAllUsers
-    }
-
-    // insert user data
-    fun insert(user: User) {
-        userRepository = UserDBRepository(application = getApplication())
-        userRepository.insert(user)
+    // get all data
+    fun getLoginDetails(context: Context, username: String): LiveData<ResultModel>? {
+        liveDataLogin = UserDBRepository.getLoginDetails(context, username)
+        return liveDataLogin
     }
 }

@@ -11,15 +11,11 @@ import com.demo.princichristipracticaltask.Repository.User
 @Dao
 interface UserInfoDao {
 
-    // insert user data
+    //insert data
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(user: User)
+    suspend fun insert(resultModel: ResultModel)
 
-    // get all user data
-    @Query("SELECT * from user_info ORDER BY user_name ASC")
-    fun getAllUsers():LiveData<List<User>>
-
-    // delete all user data
-    @Query("DELETE FROM user_info")
-    fun deleteAll()
+    //get Data
+    @Query("SELECT * FROM user_info  WHERE Username =:username")
+    fun getLoginDetails(username: String?) : LiveData<ResultModel>
 }

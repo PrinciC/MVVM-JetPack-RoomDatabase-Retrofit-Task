@@ -7,41 +7,35 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(entities = arrayOf(ResultModel::class), version = 1)
-abstract  class UserInfoRoomDataBase: RoomDatabase(){
+abstract class UserInfoRoomDataBase : RoomDatabase() {
 
-    abstract fun postInfoDao(): UserInfoDao
+    abstract fun loginDao(): UserInfoDao
 
     //Database create
     companion object {
+
+        @Volatile
         private var INSTANCE: UserInfoRoomDataBase? = null
 
-        fun getInstance(context: Context): UserInfoRoomDataBase? {
-            if (INSTANCE == null) {
-                synchronized(this) {
+        fun getDataseClient(context: Context): UserInfoRoomDataBase {
 
-                    INSTANCE = Room
-                        .databaseBuilder(context,
-                            UserInfoRoomDataBase::class.java, "user_info_database.db")
-                        .fallbackToDestructiveMigration()
-                        .build()
-                           /* .addCallback(sRoomDataBaseCallback)
-                            .build()*/
+            if (INSTANCE != null) return INSTANCE!!
 
-                }
-            }
-            return INSTANCE
-        }
+            synchronized(this) {
 
-        fun destroyInstance() {
-            INSTANCE = null
-        }
+                INSTANCE = Room
+                    .databaseBuilder(context, UserInfoRoomDataBase::class.java, "USER_DATABASE")
+                    .fallbackToDestructiveMigration()
+                    .build()
 
-        val sRoomDataBaseCallback = object:RoomDatabase.Callback(){
-            override fun onOpen(db: SupportSQLiteDatabase) {
-                super.onOpen(db)
-                PopulateDbAsync(INSTANCE!!).execute()
+                return INSTANCE!!
+
             }
         }
-    }
 
     }
+
+
+}
+
+

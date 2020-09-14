@@ -2,14 +2,16 @@ package com.demo.princichristipracticaltask.View
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.Observer
 import com.demo.princichristipracticaltask.R
 import com.demo.princichristipracticaltask.Repository.ResultModel
 import com.demo.princichristipracticaltask.Utils.GlobalData
+import com.demo.princichristipracticaltask.ViewModels.LoginViewModel
 import kotlinx.android.synthetic.main.activity_user_detail.*
 
 class UserDetailActivity : AppCompatActivity() {
 
-    val userDatabase : ResultModel? = null
+    lateinit var loginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,9 +26,7 @@ class UserDetailActivity : AppCompatActivity() {
         var strUser: String = intent.getStringExtra(GlobalData.USERNAME)
         var strPassword: String = intent.getStringExtra(GlobalData.PASSWORD)
 
-        //get username fro database
-        var dbUserName = userDatabase?.getBody()
-
+        //get Data from database
         tvLoginData.setText(getString(R.string.str_successful_login) +" "+strUser)
     }
 }

@@ -5,33 +5,40 @@ import android.content.Context
 
 import android.os.AsyncTask
 import androidx.lifecycle.LiveData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 
 class UserDBRepository {
-    private   var userDao: UserInfoDao
-    private  var mAllUsers: LiveData<List<User>>
+    companion object {
 
-    // User database Repository class
-    constructor(application: Application){
-        val db = UserInfoRoomDataBase.getInstance(application)
-        userDao = db!!.postInfoDao()
-        mAllUsers = userDao.getAllUsers()
-    }
+        var userInfoRoomDataBase: UserInfoRoomDataBase? = null
 
-    // get all users
-    fun getAllUsers(): LiveData<List<User>> {
-        return mAllUsers
-    }
+        var resultModel: LiveData<ResultModel>? = null
 
-    // insert users
-    fun insert(user: User) {
-        InsertAsyncTask(userDao).execute(user)
-    }
-    class InsertAsyncTask internal  constructor(userDao: UserInfoDao): AsyncTask<User, Void, Void>(){
-        private  var mAsyncUserDao: UserInfoDao = userDao
-        override fun doInBackground(vararg p0: User): Void? {
-            mAsyncUserDao.insert(p0[0])
-            return null
 
+        fun initializeDB(context: Context): UserInfoRoomDataBase {
+            return UserInfoRoomDataBase.getDataseClient(context)
+        }
+
+        fun insertData(context: Context, userID: String, userName: String) {
+
+            userInfoRoomDataBase = initializeDB(context)
+
+            CoroutineScope(IO).launch {
+                val loginDetails = ResultModel(userID, userName)
+                userInfoRoomDataBase!!.loginDao().insert(loginDetails)
+            }
+
+        }
+
+        fun getLoginDetails(context: Context, username: String): LiveData<ResultModel>? {
+
+            userInfoRoomDataBase = initializeDB(context)
+
+            resultModel = userInfoRoomDataBase!!.loginDao().getLoginDetails(username)
+
+            return resultModel
         }
     }
 }

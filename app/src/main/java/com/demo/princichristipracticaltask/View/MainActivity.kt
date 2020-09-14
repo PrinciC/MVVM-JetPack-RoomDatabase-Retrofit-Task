@@ -1,6 +1,5 @@
 package com.demo.princichristipracticaltask.View
 
-import UserResponse
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -18,6 +17,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.demo.princichristipracticaltask.R
 import com.demo.princichristipracticaltask.Repository.APIURL
+import com.demo.princichristipracticaltask.Repository.UserResponse
 import com.demo.princichristipracticaltask.Utils.AppUtils
 import com.demo.princichristipracticaltask.Utils.AppUtils.Companion.showToast
 import com.demo.princichristipracticaltask.Utils.GlobalData
@@ -40,8 +40,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     val apiService = APIURL.apiService
 
-    val username: String = loginUsername.text.toString()
-    val password: String = loginPassword.text.toString()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +73,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun checkValidate() {
+
+        val username: String = loginUsername.text.toString()
+        val password: String = loginPassword.text.toString()
 
         if (username.isEmpty()) {
             loginUsername.error = GlobalData.USERNAME_MESSAGE
@@ -131,7 +132,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             //progressdialog
             progessdialog.visibility = View.VISIBLE
 
-
             //Defining retrofit api service
             apiService.loginRequest(username, password).enqueue(object : Callback<UserResponse> {
                 // API Success
@@ -139,16 +139,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     call: Call<UserResponse>,
                     response: Response<UserResponse>
                 ) {
-                    Log.d("Repository", "Response::::" + response.body()!!)
 
                     val responce: UserResponse? = response.body()
+                    Log.d("Repository", "Response::::" + responce)
 
                     if (responce == null) {
                         val responseBody = response.errorBody()
                         if (responseBody != null) {
                             try {
 
-                                showToast(this@MainActivity,GlobalData.Unknown)
+                                showToast(this@MainActivity, GlobalData.Unknown)
 
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -174,11 +174,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                             }, 2000)
 
                             // insert api response user data in database
-                            loginViewModel.insert(responce.user)
+                            loginViewModel.insertData(context, responce.user.userId.toString(), responce.user.userName)
 
                         } else {
 
-                            showToast(this@MainActivity,GlobalData.Unknown)
+                            showToast(this@MainActivity, GlobalData.Unknown)
 
                         }
 
