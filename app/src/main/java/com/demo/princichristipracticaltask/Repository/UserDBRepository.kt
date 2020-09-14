@@ -14,7 +14,6 @@ class UserDBRepository {
         val db = UserInfoRoomDataBase.getInstance(application)
         userDao = db!!.postInfoDao()
         mAllUsers = userDao.getAllUsers()
-
     }
 
     // get all users
@@ -27,10 +26,7 @@ class UserDBRepository {
         InsertAsyncTask(userDao).execute(user)
     }
     class InsertAsyncTask internal  constructor(userDao: UserInfoDao): AsyncTask<User, Void, Void>(){
-        private  var mAsyncUserDao: UserInfoDao
-        init {
-            mAsyncUserDao = userDao
-        }
+        private  var mAsyncUserDao: UserInfoDao = userDao
         override fun doInBackground(vararg p0: User): Void? {
             mAsyncUserDao.insert(p0[0])
             return null

@@ -1,5 +1,7 @@
 package com.demo.princichristipracticaltask.View
 
+import android.app.Application
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,6 +14,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.demo.princichristipracticaltask.R
 import com.demo.princichristipracticaltask.Repository.APIURL.Companion.apiService
@@ -19,6 +23,7 @@ import com.demo.princichristipracticaltask.Repository.User
 import com.demo.princichristipracticaltask.Utils.GlobalData
 import com.demo.princichristipracticaltask.ViewModels.LoginViewModel
 import okhttp3.OkHttpClient
+import okhttp3.internal.platform.Platform.get
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,6 +34,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     // LoginViewModel for observing login data
     lateinit var loginViewModel: LoginViewModel
+    lateinit var context: Context
 
     lateinit var loginUsername: EditText
     lateinit var loginPassword: EditText
@@ -57,7 +63,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             // Check validation for username & password
             checkValidate()
         }
-
     }
 
     private fun checkValidate() {
@@ -92,13 +97,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         // Login api call
         try {
-            loginViewModel = ViewModelProviders.of(this!!).get(LoginViewModel::class.java)
-            loginViewModel.validateCredentials(username, password).observe(this, object :
-                Observer<String> {
-                override fun onChanged(t: String?) {
-                    callLoginRequest(username, password)
-                }
-            })
+            context = this@MainActivity
+            loginViewModel = ViewModelProvider(this, MyViewModelFactory(this.application, context)).get(
+                LoginViewModel::class.java
+            )
+            loginViewModel.validateCredentials(username, password).observe(this,
+                Observer<String> { callLoginRequest(username, password) })
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -140,6 +145,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             e.printStackTrace()
         }
 
+    }
+
+    class MyViewModelFactory(private val mApplication: Application, private val context: Context) :
+        ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return LoginViewModel(context, mApplication) as T
+        }
     }
 }
 

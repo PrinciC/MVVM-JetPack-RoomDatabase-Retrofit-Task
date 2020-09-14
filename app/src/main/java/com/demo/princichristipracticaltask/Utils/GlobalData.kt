@@ -12,6 +12,8 @@ object GlobalData {
     var LOGIN_PASSWORD_VALIDATION_MESSAGE = "Password should be less then 16 character"
 
     var LOGIN_PASSWORD_INVALID = "Invalid Password"
+    var LOGIN_SUCCESSFUL = "Successful Login"
+    var LOGIN_USERNAME_INVALID = "Invalid Username"
 
     var USERNAME = "username"
     var PASSWORD = "password"
