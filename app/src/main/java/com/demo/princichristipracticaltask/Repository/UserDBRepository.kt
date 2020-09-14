@@ -21,12 +21,12 @@ class UserDBRepository {
             return UserInfoRoomDataBase.getDataseClient(context)
         }
 
-        fun insertData(context: Context, userID: String, userName: String) {
+        fun insertData(context: Context, userName: String, password: String) {
 
             userInfoRoomDataBase = initializeDB(context)
 
             CoroutineScope(IO).launch {
-                val loginDetails = ResultModel(userID, userName)
+                val loginDetails = ResultModel(userName, password)
                 userInfoRoomDataBase!!.loginDao().insert(loginDetails)
             }
 

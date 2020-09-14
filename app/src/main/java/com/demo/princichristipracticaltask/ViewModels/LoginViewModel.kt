@@ -14,8 +14,8 @@ class LoginViewModel(private val context: Context, application: Application) :
     var liveDataLogin: LiveData<ResultModel>? = null
 
     // insert data
-    fun insertData(context: Context, userId: String, userName: String) {
-        UserDBRepository.insertData(context, userId, userName)
+    fun insertData(context: Context, userName: String, password: String) {
+        UserDBRepository.insertData(context, userName, password)
     }
 
     // get all data

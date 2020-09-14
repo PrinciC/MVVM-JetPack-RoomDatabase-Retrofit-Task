@@ -10,11 +10,11 @@ import com.google.gson.annotations.SerializedName
 @Entity(tableName = "user_info")
 class ResultModel(
     //database table create
-    @ColumnInfo(name = "userID")
-    var userID: String,
-
     @ColumnInfo(name = "userName")
-    var userName: String
+    var userName: String,
+
+    @ColumnInfo(name = "password")
+    var password: String
 ) {
 
     @PrimaryKey(autoGenerate = true)

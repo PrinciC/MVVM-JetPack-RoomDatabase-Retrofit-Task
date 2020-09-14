@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                             }, 2000)
 
                             // insert api response user data in database
-                            loginViewModel.insertData(context, responce.user.userId.toString(), responce.user.userName)
+                            loginViewModel.insertData(context, username, password)
 
                         } else {
 
